@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+	<localRepository>C:\temp\maven\.m2</localRepository>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<bw.it.local.repository.path>${parentProject.basedir}/m2-repo</bw.it.local.repository.path>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>tibco</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<tibco.home>C:/tibco</tibco.home>
+				<executables.extension>.exe</executables.extension>
+				<libraries.extension>.dll</libraries.extension>
+				<tibco.bw.version>5.9</tibco.bw.version>
+				<tibco.designer.version>5.7</tibco.designer.version>
+				<tibco.ems.version>6.3</tibco.ems.version>
+				<tibco.hawk.version>4.9</tibco.hawk.version>
+				<tibco.tra.version>5.7</tibco.tra.version>
+				<tibco.rv.version>8.3</tibco.rv.version>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>first@local</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<tibco.hostname>HOSTNAME</tibco.hostname>
+				<tibco.domain.name>LOCAL</tibco.domain.name>
+				<tibco.domain.username>admin</tibco.domain.username>
+				<tibco.domain.password>admin</tibco.domain.password>
+				<deploy.properties.filterProperties>true</deploy.properties.filterProperties>
+
+				<!-- deploy-time configuration -->
+				<deploy.config.home>C:\temp\maven\demo\deployConfig</deploy.config.home>
+
+				<deploy.properties.globalVariables.common>
+					${deploy.config.home}/deploy.gv.properties
+				</deploy.properties.globalVariables.common>
+				<deploy.properties.services.common>
+					${deploy.config.home}/deploy.services.properties
+				</deploy.properties.services.common>
+				<deploy.properties.globalVariables.reference>
+					${deploy.config.home}/${project.artifactId}/${project.artifactId}.gv.properties
+				</deploy.properties.globalVariables.reference>
+				<deploy.properties.services.reference>
+					${deploy.config.home}/${project.artifactId}/${project.artifactId}.services.properties
+				</deploy.properties.services.reference>
+			</properties>
+		</profile>
+	</profiles>
+</settings>
