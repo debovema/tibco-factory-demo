@@ -19,31 +19,31 @@
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1443712078078</pd:targetNamespace>
-    <pd:activity name="Log">
-        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
-        <pd:resourceType>ae.activities.log</pd:resourceType>
-        <pd:x>218</pd:x>
+    <pd:activity name="SimplestLogger">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>210</pd:x>
         <pd:y>130</pd:y>
         <config>
-            <role>User</role>
+            <processName>/SimplestLogger.process</processName>
         </config>
         <pd:inputBindings>
-            <ns:ActivityInput>
+            <input>
                 <message>
-                    <xsl:value-of select="'Hello world'"/>
+                    <xsl:value-of select="'Hello world with a Projlib'"/>
                 </message>
-            </ns:ActivityInput>
+            </input>
         </pd:inputBindings>
     </pd:activity>
     <pd:transition>
         <pd:from>onStartup</pd:from>
-        <pd:to>Log</pd:to>
+        <pd:to>SimplestLogger</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Log</pd:from>
+        <pd:from>SimplestLogger</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
