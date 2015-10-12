@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    (C) Copyright 2011-2015 FastConnect SAS
+    (http://www.fastconnect.fr/) and others.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.company</groupId>
+		<artifactId>first</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.company</groupId>
+	<artifactId>first-delivery</artifactId>
+	<packaging>pom</packaging>
+
+	<name>First - Delivery package</name>
+
+	<properties>
+		<archive>${project.build.directory}/${short.name}-${project.version}.zip</archive>
+		<deploy.extract>${short.name}</deploy.extract>
+		<deliveryExclude>*:${project.artifactId}</deliveryExclude> <!-- ignore self -->
+		<generate.pom.use.parent>true</generate.pom.use.parent> <!-- use parent instead of self -->
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<dependencies>
+					<dependency>
+						<groupId>fr.fastconnect.factory.tibco.bw.maven</groupId>
+						<artifactId>bw-maven-assemblies</artifactId>
+						<version>${bw.maven.plugin.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<finalName>${short.name}-${project.version}</finalName>
+					<descriptorRefs>
+						<descriptorRef>bw-zip</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>create-project-bundle</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>truezip-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<id>extract-poms</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<fileset>
+								<directory>${archive}</directory>
+								<includes>
+									<include>${deploy.pom}</include>
+									<include>${package.bw.applications.root}/**/${deploy.pom}</include>
+								</includes>
+								<outputDirectory>${project.build.directory}/copy-fileset</outputDirectory>
+							</fileset>
+						</configuration>
+					</execution>
+					<execution>
+						<id>include-fixed-poms</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<fileset>
+								<directory>${project.build.directory}/copy-fileset</directory>
+								<includes>
+									<include>${deploy.pom}</include>
+									<include>${package.bw.applications.root}/**/${deploy.pom}</include>
+								</includes>
+								<outputDirectory>${archive}</outputDirectory>
+							</fileset>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unzip</id>
+						<phase>package</phase>
+						<goals>
+							<goal>cp</goal>
+						</goals>
+						<configuration>
+							<from>${archive}</from>
+							<to>${project.build.directory}/${deploy.extract}</to>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>prepare-poms</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<mkdir dir="${project.build.directory}/copy-fileset" />
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>fix-relative-path</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<replaceregexp byline="true">
+									<regexp pattern="&lt;/parent&gt;" />
+									<substitution expression=" &lt;relativePath&gt;../${package.bw.applications.root.return}/${assembly.relative.path.return}&lt;/relativePath&gt;${line.separator} &lt;/parent&gt;" />
+									<fileset dir="${project.build.directory}/copy-fileset">
+										<include name="**/${deploy.pom}" />
+									</fileset>
+								</replaceregexp>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
