@@ -51,6 +51,7 @@
 	<modules>
 		<!-- here add your BusinessWorks modules -->
     <module>first-bw-project</module>
+    <module>first-bw-projlib</module>
   </modules>
 
 	<build>
